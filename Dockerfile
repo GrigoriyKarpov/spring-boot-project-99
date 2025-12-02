@@ -1,19 +1,30 @@
-# Build stage
-FROM gradle:9.2.1-jdk17 AS build
+FROM gradle:9.2.1-jdk17 AS builder
 
-WORKDIR /app
+# Устанавливаем рабочую директорию как /app (внутри контейнера)
+WORKDIR /workspace
 
+# Копируем ВСЕ содержимое репозитория
 COPY . .
 
+# Переходим в папку с проектом
+WORKDIR /workspace/app
+
+# Собираем проект
 RUN gradle bootJar
 
-# Runtime stage - используем полный JDK для надежности
-FROM openjdk:17-jdk
+# Проверяем что JAR создан
+RUN ls -la build/libs/
+
+# Создаем финальный образ
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-COPY --from=build /app/build/libs/*.jar app.jar
+# Копируем JAR из builder стадии
+COPY --from=builder /workspace/app/build/libs/*.jar app.jar
 
+# Открываем порт
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Запускаем приложение
+CMD ["java", "-jar", "app.jar"]
