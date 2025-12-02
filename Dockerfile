@@ -6,15 +6,11 @@ COPY . .
 
 RUN gradle bootJar
 
-# Запускаем приложение из JAR
-FROM openjdk:17-slim
-# или FROM eclipse-temurin:17-jre-alpine
-# или FROM amazoncorretto:17-alpine
+# Используем конкретный тег с версией
+FROM openjdk:17.0.10-slim
 
 WORKDIR /app
 
-# Копируем собранный JAR из builder стадии
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-# Запускаем приложение
 CMD ["java", "-jar", "app.jar"]
