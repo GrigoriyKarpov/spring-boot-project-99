@@ -1,4 +1,5 @@
-FROM gradle:9.2.1-jdk17 AS builder
+# Build stage
+FROM gradle:9.2.1-jdk17 AS build
 
 WORKDIR /app
 
@@ -6,11 +7,13 @@ COPY . .
 
 RUN gradle bootJar
 
-# Используем Eclipse Temurin - официальный дистрибутив OpenJDK
-FROM eclipse-temurin:17-jre-alpine
+# Runtime stage - используем полный JDK для надежности
+FROM openjdk:17-jdk
 
 WORKDIR /app
 
-COPY --from=builder /app/build/libs/*.jar app.jar
+COPY --from=build /app/build/libs/*.jar app.jar
 
-CMD ["java", "-jar", "app.jar"]
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
