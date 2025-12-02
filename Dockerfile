@@ -1,13 +1,11 @@
-FROM gradle:9.2.1-jdk17 AS builder
+FROM gradle:8.7-jdk17 AS builder
 
 WORKDIR /workspace
 COPY . .
 WORKDIR /workspace/app
 
-# Используем build вместо bootJar
 RUN gradle build
 
-# Проверяем что создалось
 RUN ls -la build/libs/
 
 FROM eclipse-temurin:17-jre-alpine
