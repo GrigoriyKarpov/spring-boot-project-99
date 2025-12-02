@@ -6,8 +6,8 @@ COPY . .
 
 RUN gradle bootJar
 
-# Используем конкретный тег с версией
-FROM openjdk:17.0.10-slim
+# Используем Eclipse Temurin - официальный дистрибутив OpenJDK
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
